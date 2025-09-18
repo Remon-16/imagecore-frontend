@@ -17,6 +17,7 @@ export default class PictureEditWebSocket {
   connect() {
     // const DEV_BASE_URL = "";
     // 线上地址
+    // const DEV_BASE_URL = "ws://localhost:port";
     const PROD_BASE_URL = import.meta.env.VITE_BASE_WSS_URL;
     const url = `${PROD_BASE_URL}/api/ws/picture/edit?pictureId=${this.pictureId}`
     const token = localStorage.getItem('authToken');
