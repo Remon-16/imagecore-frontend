@@ -164,6 +164,10 @@ const unReadMessage = ref(false)
 const intervalId = ref(null)
 //
 const fetchUserUnReadMessageData = async () => {
+  const token = localStorage.getItem('authToken')
+  if (!token) {
+    return
+  }
   const params = {
     userId: loginUserStore.loginUser.id,
   }
