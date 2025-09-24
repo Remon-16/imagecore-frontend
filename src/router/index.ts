@@ -19,6 +19,7 @@ import UserDataEditPage from '@/pages/user/UserDataEditPage.vue'
 import UserDataInfoPage from '@/pages/user/UserDataInfoPage.vue'
 import ScoreStorePage from '@/pages/ScoreStorePage.vue'
 import UserMessagePage from '@/pages/UserMessagePage.vue'
+import GameDemoPage from '@/pages/GameDemoPage.vue'
 
 // @author Remon
 const router = createRouter({
@@ -79,6 +80,11 @@ const router = createRouter({
       name: '空间成员管理',
       component: SpaceUserManagePage,
       props: true,
+    },
+    {
+      path: '/game_demo',
+      name: '游戏demo',
+      component: GameDemoPage,
     },
     {
       path: '/add_picture',
