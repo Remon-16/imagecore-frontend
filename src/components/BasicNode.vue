@@ -1,0 +1,142 @@
+<template>
+  <div class="basic-node" :class="{ selected: selected }">
+    <div class="node-header">
+
+      <span class="node-title">{{ nodeData.label }}</span>
+    </div>
+    <div class="node-content">
+      <div class="node-props">
+        <span v-for="prop in nodeData.properties" :key="prop" class="node-prop">
+          {{ prop }}
+        </span>
+      </div>
+    </div>
+    <div class="node-ports">
+      <div class="port in-port" data-port-group="in"></div>
+      <div class="port out-port" data-port-group="out"></div>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { inject, ref, onMounted, onUnmounted, computed } from 'vue'
+
+interface NodeData {
+  label: string
+  properties: string[]
+  status?: 'success' | 'error' | 'warning'
+}
+
+const props = defineProps<{
+  data?: NodeData // 改为可选
+}>()
+
+// 使用计算属性提供默认值
+const nodeData = computed(() => {
+  return props.data || {
+    label: '未知节点',
+    properties: ['未配置'],
+    status: 'warning'
+  }
+})
+
+const selected = ref(false)
+const getNode = inject<() => any>('getNode')
+const node = getNode?.()
+
+onMounted(() => {
+  if (node) {
+    node.on('change:selected', () => {
+      selected.value = node.hasState('selected')
+    })
+  }
+})
+
+onUnmounted(() => {
+  if (node) {
+    node.off('change:selected')
+  }
+})
+</script>
+<style scoped>
+.basic-node {
+  width: 120px;
+  background: white;
+  border: 2px solid #5F95FF;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.basic-node:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+}
+
+.basic-node.selected {
+  border-color: #FF6B6B;
+  box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
+}
+
+.node-header {
+  background: #5F95FF;
+  color: white;
+  padding: 6px 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.node-icon {
+  font-size: 14px;
+}
+
+.node-content {
+  padding: 8px;
+}
+
+.node-props {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.node-prop {
+  font-size: 10px;
+  color: #666;
+  padding: 2px 4px;
+  background: #f5f5f5;
+  border-radius: 2px;
+}
+
+.node-ports {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.port {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: white;
+  border: 2px solid #5F95FF;
+  pointer-events: all;
+  cursor: crosshair;
+}
+
+.in-port {
+  margin-left: -6px;
+}
+
+.out-port {
+  margin-right: -6px;
+}
+</style>
