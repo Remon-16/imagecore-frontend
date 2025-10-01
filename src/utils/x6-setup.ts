@@ -68,7 +68,7 @@ export const nodeTypes = [
     type: 'start',
     name: '开始节点',
     shape: 'custom-basic-node',
-    width: 80,
+    width: 120,
     height: 80,
     data: {
       label: '开始',
@@ -79,7 +79,7 @@ export const nodeTypes = [
     type: 'end',
     name: '结束节点',
     shape: 'custom-basic-node',
-    width: 80,
+    width: 120,
     height: 80,
     data: {
       label: '结束',

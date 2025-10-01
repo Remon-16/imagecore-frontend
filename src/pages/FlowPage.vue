@@ -17,6 +17,8 @@ import { Graph } from '@antv/x6'
 import FlowToolbar from '@/components/FlowToolbar.vue'
 import NodePanel from '@/components/NodePanel.vue'
 import { getTeleport } from '@antv/x6-vue-shape'
+import { History } from '@antv/x6-plugin-history'
+import { Selection } from '@antv/x6-plugin-selection'
 
 
 const TeleportContainer = getTeleport()
@@ -42,7 +44,8 @@ onMounted(() => {
     },
     panning: {
       enabled: true,
-      eventTypes: ['leftMouseDown']
+      eventTypes: ['leftMouseDown'],
+      modifiers: 'shift',
     },
     mousewheel: {
       enabled: true,
@@ -84,6 +87,20 @@ onMounted(() => {
       }
     }
   })
+  graph.value.use(
+    new History({
+      enabled: true,
+    }),
+  )
+  graph.value.use(
+    new Selection({
+      enabled: true,
+      multiple: true,
+      rubberband: true,
+      movable: true,
+      showNodeSelectionBox: true,
+    }),
+  )
   // 初始化图形事件
   initGraphEvents()
 
@@ -111,7 +128,6 @@ const initDndEvents = () => {
 
       const nodeData = JSON.parse(rawData)
       const point = graph.value!.clientToLocal(e.clientX, e.clientY)
-      console.log(nodeData)
       const node = graph.value!.createNode({
         shape: nodeData.shape,
         x: point.x - (nodeData.offset?.x || 0),

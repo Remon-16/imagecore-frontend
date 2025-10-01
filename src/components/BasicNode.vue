@@ -1,7 +1,6 @@
 <template>
   <div class="basic-node" :class="{ selected: selected }">
     <div class="node-header">
-
       <span class="node-title">{{ nodeData.label }}</span>
     </div>
     <div class="node-content">
@@ -11,33 +10,16 @@
         </span>
       </div>
     </div>
-    <div class="node-ports">
-      <div class="port in-port" data-port-group="in"></div>
-      <div class="port out-port" data-port-group="out"></div>
-    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { inject, ref, onMounted, onUnmounted, computed } from 'vue'
-
-interface NodeData {
-  label: string
-  properties: string[]
-  status?: 'success' | 'error' | 'warning'
-}
-
-const props = defineProps<{
-  data?: NodeData // 改为可选
-}>()
+import { inject, ref, onMounted, onUnmounted } from 'vue'
 
 // 使用计算属性提供默认值
-const nodeData = computed(() => {
-  return props.data || {
-    label: '未知节点',
-    properties: ['未配置'],
-    status: 'warning'
-  }
+const nodeData = ref({
+  label: '未知节点',
+  properties: ['未配置'],
 })
 
 const selected = ref(false)
@@ -49,6 +31,8 @@ onMounted(() => {
     node.on('change:selected', () => {
       selected.value = node.hasState('selected')
     })
+    nodeData.value.label = node.data.label
+    nodeData.value.properties = node.data.properties
   }
 })
 

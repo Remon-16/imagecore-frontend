@@ -38,12 +38,12 @@ const clearSelected = () => {
 
 const undo = () => {
   // 实现撤销逻辑
-  console.log('撤销操作')
+  graph?.value?.undo()
 }
 
 const redo = () => {
   // 实现重做逻辑
-  console.log('重做操作')
+  graph?.value?.redo()
 }
 
 const exportJSON = () => {

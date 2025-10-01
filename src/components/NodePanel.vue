@@ -13,6 +13,11 @@
           {{ nodeType.name }}
         </div>
       </div>
+      <div>
+        提示：<br>
+        <span>1 按住shift和鼠标左键拖动画布。<br></span>
+        <span>2 线也可以选中删除，类似节点（但是没有选中反馈，看不出来选没选上，实在是没解决，sorry）<br></span>
+      </div>
     </div>
   </div>
 </template>
