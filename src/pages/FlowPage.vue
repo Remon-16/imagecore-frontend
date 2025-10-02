@@ -7,24 +7,77 @@
         <div ref="containerRef" class="x6-graph-container"></div>
         <TeleportContainer />
       </div>
+
+      <a-drawer
+        title="节点属性编辑"
+        placement="right"
+        :visible="editDrawerVisible"
+        @close="editDrawerVisible = false"
+        width="400"
+      >
+        <a-form :model="formState" layout="vertical" v-if="selectedNodeData">
+          <a-form-item label="节点标签">
+            <a-input v-model:value="selectedNodeData.label" />
+          </a-form-item>
+          <a-form-item label="节点属性">
+            <a-select
+              v-model:value="selectedNodeData.properties"
+              mode="tags"
+              style="width: 100%"
+              placeholder="添加属性"
+            />
+          </a-form-item>
+          <a-form-item>
+            <a-button type="primary" @click="saveNodeData">保存</a-button>
+          </a-form-item>
+        </a-form>
+      </a-drawer>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, provide } from 'vue'
+import { ref, onMounted, onUnmounted, provide, watch, reactive } from 'vue'
 import { Graph } from '@antv/x6'
-import FlowToolbar from '@/components/FlowToolbar.vue'
-import NodePanel from '@/components/NodePanel.vue'
+import FlowToolbar from '@/components/flowChart/FlowToolbar.vue'
+import NodePanel from '@/components/flowChart/NodePanel.vue'
 import { getTeleport } from '@antv/x6-vue-shape'
 import { History } from '@antv/x6-plugin-history'
 import { Selection } from '@antv/x6-plugin-selection'
-
+import { Snapline } from '@antv/x6-plugin-snapline'
 
 const TeleportContainer = getTeleport()
 const containerRef = ref<HTMLDivElement>()
 const graph = ref<Graph>()
 
+const editDrawerVisible = ref(false)
+const selectedNodeData = ref<any>(null)
+const selectedNode = ref<any>(null)
+
+const formState = reactive({
+  label: '',
+  properties: [] as string[],
+})
+
+// 保存节点数据
+const saveNodeData = () => {
+  if (selectedNode.value) {
+    const node = selectedNode.value
+    // 1. 直接更新节点数据
+    // node.updateData(selectedNodeData.value)
+    // node.prop('size', { width: 120, height: 50 })
+    node.prop('data', selectedNodeData.value)
+    // node.label =
+    // node.prop('label', selectedNode.value.label)
+    // node.attr('label', selectedNode.value.label)
+    node.prop('attrs/label/text', selectedNodeData.value.label)
+    // console.log(node)
+    // node.attrs = selectedNode.value
+    // node.proxy.$forceUpdate()
+    // node.prop('size', { width: size.width, height: size.height })
+    editDrawerVisible.value = false
+  }
+}
 provide('graph', graph)
 
 onMounted(() => {
@@ -39,8 +92,8 @@ onMounted(() => {
       type: 'doubleMesh',
       args: [
         { color: '#eee', thickness: 1 },
-        { color: '#ddd', thickness: 1, factor: 4 }
-      ]
+        { color: '#ddd', thickness: 1, factor: 4 },
+      ],
     },
     panning: {
       enabled: true,
@@ -52,22 +105,22 @@ onMounted(() => {
       zoomAtMousePosition: true,
       modifiers: 'ctrl',
       minScale: 0.5,
-      maxScale: 3
+      maxScale: 3,
     },
     background: {
-      color: '#f8f9fa'
+      color: '#f8f9fa',
     },
     connecting: {
       router: 'manhattan',
       connector: {
         name: 'rounded',
-        args: { radius: 8 }
+        args: { radius: 8 },
       },
       anchor: 'center',
       connectionPoint: 'boundary',
       allowBlank: false,
       snap: {
-        radius: 20
+        radius: 20,
       },
       createEdge() {
         return graph.value!.createEdge({
@@ -79,13 +132,13 @@ onMounted(() => {
               targetMarker: {
                 name: 'block',
                 width: 12,
-                height: 8
-              }
-            }
-          }
+                height: 8,
+              },
+            },
+          },
         })
-      }
-    }
+      },
+    },
   })
   graph.value.use(
     new History({
@@ -99,6 +152,11 @@ onMounted(() => {
       rubberband: true,
       movable: true,
       showNodeSelectionBox: true,
+    }),
+  )
+  graph.value.use(
+    new Snapline({
+      enabled: true,
     }),
   )
   // 初始化图形事件
@@ -146,9 +204,9 @@ const initDndEvents = () => {
                   magnet: true,
                   stroke: '#5F95FF',
                   strokeWidth: 1,
-                  fill: '#fff'
-                }
-              }
+                  fill: '#fff',
+                },
+              },
             },
             out: {
               position: 'right',
@@ -158,16 +216,16 @@ const initDndEvents = () => {
                   magnet: true,
                   stroke: '#5F95FF',
                   strokeWidth: 1,
-                  fill: '#fff'
-                }
-              }
-            }
+                  fill: '#fff',
+                },
+              },
+            },
           },
           items: [
             { group: 'in', id: `in-${Date.now()}` },
-            { group: 'out', id: `out-${Date.now()}` }
-          ]
-        }
+            { group: 'out', id: `out-${Date.now()}` },
+          ],
+        },
       })
 
       graph.value!.addNode(node)
@@ -181,8 +239,11 @@ const initGraphEvents = () => {
   if (!graph.value) return
 
   // 节点点击事件
-  graph.value.on('node:click', ({ node }) => {
-    console.log('节点被点击:', node.id)
+  graph.value.on('node:dblclick', ({ node }) => {
+    console.log('节点被双击:', node.id)
+    selectedNode.value = node
+    selectedNodeData.value = node.getData()
+    editDrawerVisible.value = true
   })
 
   // 边点击事件
@@ -191,7 +252,6 @@ const initGraphEvents = () => {
   })
 }
 </script>
-
 
 <style scoped>
 .app {

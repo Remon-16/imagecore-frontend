@@ -23,7 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { nodeTypes } from '@/utils/x6-setup'
+import { nodeTypes } from '@/utils/x6-setup.ts'
 
 interface NodeType {
   type: string

@@ -1,6 +1,6 @@
 import { Graph } from '@antv/x6'
 import { register } from '@antv/x6-vue-shape'
-import BasicNode from '@/components/BasicNode.vue'
+import BasicNode from '@/components/flowChart/BasicNode.vue'
 
 
 // 注册Vue节点
@@ -67,7 +67,7 @@ export const nodeTypes = [
   {
     type: 'start',
     name: '开始节点',
-    shape: 'custom-basic-node',
+    shape: 'ellipse',
     width: 120,
     height: 80,
     data: {
@@ -78,7 +78,7 @@ export const nodeTypes = [
   {
     type: 'end',
     name: '结束节点',
-    shape: 'custom-basic-node',
+    shape: 'ellipse',
     width: 120,
     height: 80,
     data: {

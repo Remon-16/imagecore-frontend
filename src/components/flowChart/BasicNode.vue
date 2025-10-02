@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { inject, ref, onMounted, onUnmounted } from 'vue'
+import { inject, ref, onMounted, onUnmounted, getCurrentInstance } from 'vue'
 
 // 使用计算属性提供默认值
 const nodeData = ref({
@@ -31,8 +31,19 @@ onMounted(() => {
     node.on('change:selected', () => {
       selected.value = node.hasState('selected')
     })
-    nodeData.value.label = node.data.label
-    nodeData.value.properties = node.data.properties
+    node.on('change:data', () => {
+      // console.log('data', node)
+      const inst = getCurrentInstance()
+      nodeData.value.label = node.getData().label
+      nodeData.value.properties = node.getData().properties
+      const f = () =>{
+        inst?.proxy?.$forceUpdate()
+        // console.log('已执行强制刷新')
+      }
+      f()
+    })
+    nodeData.value.label = node.getData().label
+    nodeData.value.properties = node.getData().properties
   }
 })
 
