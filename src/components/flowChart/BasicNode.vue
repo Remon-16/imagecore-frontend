@@ -1,11 +1,11 @@
 <template>
   <div class="basic-node" :class="{ selected: selected }">
     <div class="node-header">
-      <span class="node-title">{{ nodeData.label }}</span>
+      <span class="node-title">{{ nodeData.data?.label }}</span>
     </div>
     <div class="node-content">
       <div class="node-props">
-        <span v-for="prop in nodeData.properties" :key="prop" class="node-prop">
+        <span v-for="prop in nodeData.data?.properties" :key="prop" class="node-prop">
           {{ prop }}
         </span>
       </div>
@@ -14,12 +14,11 @@
 </template>
 
 <script setup lang="ts">
-import { inject, ref, onMounted, onUnmounted, getCurrentInstance } from 'vue'
+import { inject, ref, onMounted, onUnmounted, reactive } from 'vue'
 
 // 使用计算属性提供默认值
-const nodeData = ref({
-  label: '未知节点',
-  properties: ['未配置'],
+const nodeData = reactive({
+  data: { } ,
 })
 
 const selected = ref(false)
@@ -31,19 +30,10 @@ onMounted(() => {
     node.on('change:selected', () => {
       selected.value = node.hasState('selected')
     })
-    node.on('change:data', () => {
-      // console.log('data', node)
-      const inst = getCurrentInstance()
-      nodeData.value.label = node.getData().label
-      nodeData.value.properties = node.getData().properties
-      const f = () =>{
-        inst?.proxy?.$forceUpdate()
-        // console.log('已执行强制刷新')
-      }
-      f()
+    node.on('change:data', async (d) => {
+      nodeData.data = d.current
     })
-    nodeData.value.label = node.getData().label
-    nodeData.value.properties = node.getData().properties
+    nodeData.data = node.getData()
   }
 })
 
@@ -57,7 +47,7 @@ onUnmounted(() => {
 .basic-node {
   width: 120px;
   background: white;
-  border: 2px solid #5F95FF;
+  border: 2px solid #5f95ff;
   border-radius: 6px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   cursor: pointer;
@@ -70,12 +60,12 @@ onUnmounted(() => {
 }
 
 .basic-node.selected {
-  border-color: #FF6B6B;
+  border-color: #ff6b6b;
   box-shadow: 0 0 0 2px rgba(255, 107, 107, 0.2);
 }
 
 .node-header {
-  background: #5F95FF;
+  background: #5f95ff;
   color: white;
   padding: 6px 8px;
   display: flex;
@@ -122,7 +112,7 @@ onUnmounted(() => {
   height: 12px;
   border-radius: 50%;
   background: white;
-  border: 2px solid #5F95FF;
+  border: 2px solid #5f95ff;
   pointer-events: all;
   cursor: crosshair;
 }

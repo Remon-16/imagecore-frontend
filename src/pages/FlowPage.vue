@@ -17,11 +17,11 @@
       >
         <a-form :model="formState" layout="vertical" v-if="selectedNodeData">
           <a-form-item label="节点标签">
-            <a-input v-model:value="selectedNodeData.label" />
+            <a-input v-model:value="formState.label" />
           </a-form-item>
           <a-form-item label="节点属性">
             <a-select
-              v-model:value="selectedNodeData.properties"
+              v-model:value="formState.properties"
               mode="tags"
               style="width: 100%"
               placeholder="添加属性"
@@ -64,17 +64,8 @@ const saveNodeData = () => {
   if (selectedNode.value) {
     const node = selectedNode.value
     // 1. 直接更新节点数据
-    // node.updateData(selectedNodeData.value)
-    // node.prop('size', { width: 120, height: 50 })
-    node.prop('data', selectedNodeData.value)
-    // node.label =
-    // node.prop('label', selectedNode.value.label)
-    // node.attr('label', selectedNode.value.label)
-    node.prop('attrs/label/text', selectedNodeData.value.label)
-    // console.log(node)
-    // node.attrs = selectedNode.value
-    // node.proxy.$forceUpdate()
-    // node.prop('size', { width: size.width, height: size.height })
+    node.setData({ ...formState } )
+    node.prop('attrs/label/text', formState.label)
     editDrawerVisible.value = false
   }
 }
@@ -240,9 +231,10 @@ const initGraphEvents = () => {
 
   // 节点点击事件
   graph.value.on('node:dblclick', ({ node }) => {
-    console.log('节点被双击:', node.id)
     selectedNode.value = node
     selectedNodeData.value = node.getData()
+    formState.label = selectedNodeData.value.label
+    formState.properties = selectedNodeData.value.properties
     editDrawerVisible.value = true
   })
 
