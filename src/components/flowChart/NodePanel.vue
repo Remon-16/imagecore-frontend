@@ -1,6 +1,9 @@
 <template>
   <div class="node-panel">
-    <h3>流程节点</h3>
+    <div class="panel-header">
+      <h3>节点选择</h3>
+    </div>
+
     <div class="node-list">
       <div
         v-for="nodeType in nodeTypes"
@@ -59,16 +62,27 @@ const onDragStart = (e: DragEvent, nodeType: NodeType) => {
 
 <style scoped>
 .node-panel {
-  width: 200px;
-  background: #f8f9fa;
-  border-right: 1px solid #e0e0e0;
+  height: 100%;
+  background: #fff;
+  border-right: 1px solid #d9d9d9;
+  display: flex;
+  flex-direction: column;
+}
+
+.panel-header {
   padding: 16px;
-  height: 100vh;
-  overflow-y: auto;
+  height: 50px;
+  border-bottom: 1px solid #d9d9d9;
+  display: flex;
+  align-items: center;
+  background: #fafafa;
+  position: sticky
 }
 
 .node-list {
+  padding: 8px;
   display: flex;
+  background: #fff;
   flex-direction: column;
   gap: 8px;
 }

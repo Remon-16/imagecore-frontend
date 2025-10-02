@@ -1,43 +1,23 @@
 <template>
   <div class="app">
     <FlowToolbar />
-    <div class="main-content">
-      <NodePanel :graph="graph" />
-      <div class="flowchart-container">
+    <a-layout>
+      <a-layout-sider width="200">
+        <NodePanel :graph="graph" />
+      </a-layout-sider>
+      <a-layout-content class="flowchart-container">
         <div ref="containerRef" class="x6-graph-container"></div>
         <TeleportContainer />
-      </div>
-
-      <a-drawer
-        title="节点属性编辑"
-        placement="right"
-        :visible="editDrawerVisible"
-        @close="editDrawerVisible = false"
-        width="400"
-      >
-        <a-form :model="formState" layout="vertical" v-if="selectedNodeData">
-          <a-form-item label="节点标签">
-            <a-input v-model:value="formState.label" />
-          </a-form-item>
-          <a-form-item label="节点属性">
-            <a-select
-              v-model:value="formState.properties"
-              mode="tags"
-              style="width: 100%"
-              placeholder="添加属性"
-            />
-          </a-form-item>
-          <a-form-item>
-            <a-button type="primary" @click="saveNodeData">保存</a-button>
-          </a-form-item>
-        </a-form>
-      </a-drawer>
-    </div>
+      </a-layout-content>
+      <a-layout-sider  width="300">
+        <NodeEdit :node="selectedNode" :node-data="selectedNodeData" :visible="editDrawerVisible"/>
+      </a-layout-sider>
+    </a-layout>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, provide, watch, reactive } from 'vue'
+import { ref, onMounted, onUnmounted, provide, reactive } from 'vue'
 import { Graph } from '@antv/x6'
 import FlowToolbar from '@/components/flowChart/FlowToolbar.vue'
 import NodePanel from '@/components/flowChart/NodePanel.vue'
@@ -45,6 +25,7 @@ import { getTeleport } from '@antv/x6-vue-shape'
 import { History } from '@antv/x6-plugin-history'
 import { Selection } from '@antv/x6-plugin-selection'
 import { Snapline } from '@antv/x6-plugin-snapline'
+import NodeEdit from '@/components/flowChart/NodeEdit.vue'
 
 const TeleportContainer = getTeleport()
 const containerRef = ref<HTMLDivElement>()
@@ -59,16 +40,6 @@ const formState = reactive({
   properties: [] as string[],
 })
 
-// 保存节点数据
-const saveNodeData = () => {
-  if (selectedNode.value) {
-    const node = selectedNode.value
-    // 1. 直接更新节点数据
-    node.setData({ ...formState } )
-    node.prop('attrs/label/text', formState.label)
-    editDrawerVisible.value = false
-  }
-}
 provide('graph', graph)
 
 onMounted(() => {
@@ -76,7 +47,7 @@ onMounted(() => {
 
   graph.value = new Graph({
     container: containerRef.value,
-    width: 1200,
+    width: 1300,
     height: 1000,
     grid: {
       visible: true,
@@ -229,8 +200,12 @@ const initDndEvents = () => {
 const initGraphEvents = () => {
   if (!graph.value) return
 
-  // 节点点击事件
+  // 节点双击事件
   graph.value.on('node:dblclick', ({ node }) => {
+    if(node.shape === 'ellipse' && (node.getData().label === '开始' || node.getData().label === '结束')){
+      editDrawerVisible.value = false
+      return
+    }
     selectedNode.value = node
     selectedNodeData.value = node.getData()
     formState.label = selectedNodeData.value.label
@@ -238,10 +213,6 @@ const initGraphEvents = () => {
     editDrawerVisible.value = true
   })
 
-  // 边点击事件
-  graph.value.on('edge:click', ({ edge }) => {
-    console.log('边被点击:', edge.id)
-  })
 }
 </script>
 
