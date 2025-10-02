@@ -6,6 +6,7 @@
         v-for="nodeType in nodeTypes"
         :key="nodeType.type"
         class="node-item"
+        :class="nodeType.type"
         draggable="true"
         @dragstart="onDragStart($event, nodeType)"
       >
@@ -80,6 +81,24 @@ const onDragStart = (e: DragEvent, nodeType: NodeType) => {
   cursor: grab;
   transition: all 0.2s ease;
   user-select: none;
+}
+
+.node-item.process {
+  border: 2px solid #5f95ff;
+}
+
+.node-item.select {
+  border: 2px solid #a75fff;
+}
+
+.node-item.game {
+  border: 2px solid #ffb75f;
+}
+
+.node-item.start {
+}
+
+.node-item.end {
 }
 
 .node-item:hover {

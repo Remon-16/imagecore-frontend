@@ -43,7 +43,7 @@ onUnmounted(() => {
 .basic-node {
   width: 120px;
   background: white;
-  border: 2px solid #5f95ff;
+  border: 2px solid #ffb75f;
   border-radius: 6px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   cursor: pointer;
@@ -61,7 +61,7 @@ onUnmounted(() => {
 }
 
 .node-header {
-  background: #5f95ff;
+  background: #ffb75f;
   color: white;
   padding: 6px 8px;
   display: flex;

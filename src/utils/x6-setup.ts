@@ -1,6 +1,8 @@
 import { Graph } from '@antv/x6'
 import { register } from '@antv/x6-vue-shape'
 import BasicNode from '@/components/flowChart/BasicNode.vue'
+import SelectBranchNode from '@/components/flowChart/SelectBranchNode.vue'
+import GameBranchNode from '@/components/flowChart/GameBranchNode.vue'
 
 
 // 注册Vue节点
@@ -11,7 +13,32 @@ register({
   component: BasicNode,
   data: {
     label: '',
-    properties: []
+    properties: [],
+    imageUrl: 'https://picos.imagocore.top/public/1928052943001227266/2025-09-18_AOdmjrQeWl2gYK0g.webp'
+  }
+})
+
+register({
+  shape: 'custom-select-node',
+  width: 120,
+  height: 'auto',
+  component: SelectBranchNode,
+  data: {
+    label: '',
+    properties: [],
+    imageUrl: 'https://picos.imagocore.top/public/1928052943001227266/2025-09-18_AOdmjrQeWl2gYK0g.webp'
+  }
+})
+
+register({
+  shape: 'custom-game-node',
+  width: 120,
+  height: 'auto',
+  component: GameBranchNode,
+  data: {
+    label: '',
+    properties: [],
+    imageUrl: 'https://picos.imagocore.top/public/1928052943001227266/2025-09-18_AOdmjrQeWl2gYK0g.webp'
   }
 })
 
@@ -44,23 +71,34 @@ Graph.registerEdge(
 export const nodeTypes = [
   {
     type: 'process',
-    name: '处理节点',
+    name: '标准节点',
     shape: 'custom-basic-node',
     width: 120,
-    height: 80,
+    height: 120,
     data: {
-      label: '处理节点',
+      label: '标准节点',
       properties: ['数据处理']
     }
   },
   {
-    type: 'decision',
-    name: '判断节点',
-    shape: 'custom-basic-node',
+    type: 'select',
+    name: '选择分支节点',
+    shape: 'custom-select-node',
     width: 120,
-    height: 80,
+    height: 120,
     data: {
-      label: '判断节点',
+      label: '选择分支节点',
+      properties: ['条件判断']
+    }
+  },
+  {
+    type: 'game',
+    name: '游戏分支节点',
+    shape: 'custom-game-node',
+    width: 120,
+    height: 120,
+    data: {
+      label: '游戏分支节点',
       properties: ['条件判断']
     }
   },
