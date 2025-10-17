@@ -10,7 +10,7 @@
         v-model:selectedKeys="current"
         mode="inline"
         :items="menuItems"
-        @click="doMenuClick"
+        @click="handleMenuClick"
       />
     </a-layout-sider>
   </div>
@@ -23,18 +23,19 @@ import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
 import { SPACE_TYPE_ENUM } from '@/constants/space.ts'
 import { listMyTeamSpace } from '@/api/spaceUserController.ts'
 import { message } from 'ant-design-vue'
+import { useLayoutStore } from '@/stores/layoutStore.ts'
 
 const loginUserStore = useLoginUserStore()
 
 // 固定的菜单列表
 const fixedMenuItems = [
   {
-    key: '/',
+    key: 'comment_space',
     icon: () => h(PictureOutlined),
     label: '公共图库',
   },
   {
-    key: '/my_space',
+    key: 'user_space',
     label: '我的空间',
     icon: () => h(UserOutlined),
   },
@@ -44,6 +45,26 @@ const fixedMenuItems = [
     icon: () => h(TeamOutlined),
   },
 ]
+
+const router = useRouter()
+
+const layoutStore = useLayoutStore()
+// 当前要高亮的菜单项
+const current = ref<string[]>(['comment_space'])
+
+const handleMenuClick = ({ key }: { key: string }) => {
+  if(key.startsWith("/add_space") || key.startsWith("/space")) {
+    layoutStore.setCurrentSidebar('comment_space')
+    router.push(key)
+  }else{
+    layoutStore.setCurrentSidebar(key)
+    if(layoutStore.headerEntries.length > 0){
+      router.push(layoutStore.headerEntries[0].key)
+    }else {
+      message.error('跳转错误，请联系管理员')
+    }
+  }
+}
 
 const teamSpaceList = ref<API.SpaceUserVO[]>([])
 const menuItems = computed(() => {
@@ -89,18 +110,16 @@ watchEffect(() => {
   }
 })
 
-const router = useRouter()
-// 当前要高亮的菜单项
-const current = ref<string[]>([])
-// 监听路由变化，更新高亮菜单项
-router.afterEach((to, from, next) => {
-  current.value = [to.path]
-})
+// const current = ref<string[]>([])
+// // 监听路由变化，更新高亮菜单项
+// router.afterEach((to, from, next) => {
+//   current.value = [to.path]
+// })
 
-// 路由跳转事件
-const doMenuClick = ({ key }) => {
-  router.push(key)
-}
+// // 路由跳转事件
+// const doMenuClick = ({ key }) => {
+//   router.push(key)
+// }
 </script>
 
 <style scoped>
