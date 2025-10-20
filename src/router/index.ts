@@ -21,6 +21,10 @@ import ScoreStorePage from '@/pages/ScoreStorePage.vue'
 import UserMessagePage from '@/pages/UserMessagePage.vue'
 import GameDemoPage from '@/pages/GameDemoPage.vue'
 import FlowPage from '@/pages/FlowPage.vue'
+import ScriptDetailPage from '@/pages/ScriptDetailPage.vue'
+import MyScriptSpacePage from '@/pages/MyScriptSpacePage.vue'
+import AddScriptPage from '@/pages/AddScriptPage.vue'
+import ScriptEditPage from '@/pages/ScriptEditPage.vue'
 
 // @author Remon
 const router = createRouter({
@@ -119,9 +123,30 @@ const router = createRouter({
       component: MySpacePage,
     },
     {
+      path: '/my_script_space',
+      name: '我的剧本空间',
+      component: MyScriptSpacePage,
+    },
+    {
+      path: '/add_script',
+      name: '添加剧本',
+      component: AddScriptPage,
+    },
+    {
+      path: '/edit_script',
+      name: '编辑剧本',
+      component: ScriptEditPage,
+    },
+    {
       path: '/space/:id',
       name: '空间详情',
       component: SpaceDetailPage,
+      props: true,
+    },
+    {
+      path: '/script/:id',
+      name: '剧本管理',
+      component: ScriptDetailPage,
       props: true,
     },
     {

@@ -46,14 +46,14 @@ const entryMap: Record<string, HeaderEntry[]> = {
       title: '个人图库',
     },
     {
-      key: '/add_picture',
+      key: '/my_script_space',
       label: '剧本管理',
       title: '剧本管理',
     },
     {
       key: '/add_picture',
       label: '互动图库',
-      title: '互动空间',
+      title: '互动图库',
     },
   ],
   'team_space': [
