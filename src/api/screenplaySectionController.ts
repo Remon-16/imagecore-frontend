@@ -4,16 +4,44 @@ import request from '@/request'
 
 /** 此处后端没有提供注释 POST /screenplaySection/addScreenplaySection */
 export async function addScreenplaySection(
-  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.addScreenplaySectionParams,
+  body: API.ScreenplaySectionAddRequest,
   options?: { [key: string]: any }
 ) {
   return request<API.BaseResponseScreenplaySection>('/screenplaySection/addScreenplaySection', {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    data: body,
+    ...(options || {}),
+  })
+}
+
+/** 此处后端没有提供注释 GET /screenplaySection/get */
+export async function queryScreenplaySectionById(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.queryScreenplaySectionByIdParams,
+  options?: { [key: string]: any }
+) {
+  return request<API.BaseResponseScreenplaySectionVO>('/screenplaySection/get', {
+    method: 'GET',
     params: {
       ...params,
-      screenplaySection: undefined,
-      ...params['screenplaySection'],
+    },
+    ...(options || {}),
+  })
+}
+
+/** 此处后端没有提供注释 GET /screenplaySection/queryScreenplayContent */
+export async function queryScreenplayContent(
+  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
+  params: API.queryScreenplayContentParams,
+  options?: { [key: string]: any }
+) {
+  return request<API.BaseResponseScreenplayContentVO>('/screenplaySection/queryScreenplayContent', {
+    method: 'GET',
+    params: {
+      ...params,
     },
     ...(options || {}),
   })
@@ -21,19 +49,17 @@ export async function addScreenplaySection(
 
 /** 此处后端没有提供注释 POST /screenplaySection/queryScreenplaySectionByList */
 export async function queryScreenplaySectionByList(
-  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.queryScreenplaySectionByListParams,
+  body: API.ScreenplaySectionQueryRequest,
   options?: { [key: string]: any }
 ) {
   return request<API.BaseResponseListScreenplaySectionVO>(
     '/screenplaySection/queryScreenplaySectionByList',
     {
       method: 'POST',
-      params: {
-        ...params,
-        screenplaySectionQueryRequest: undefined,
-        ...params['screenplaySectionQueryRequest'],
+      headers: {
+        'Content-Type': 'application/json',
       },
+      data: body,
       ...(options || {}),
     }
   )
@@ -41,19 +67,17 @@ export async function queryScreenplaySectionByList(
 
 /** 此处后端没有提供注释 POST /screenplaySection/queryScreenplaySectionByPage */
 export async function queryScreenplaySectionByPage(
-  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.queryScreenplaySectionByPageParams,
+  body: API.ScreenplaySectionQueryRequest,
   options?: { [key: string]: any }
 ) {
   return request<API.BaseResponsePageScreenplaySectionVO>(
     '/screenplaySection/queryScreenplaySectionByPage',
     {
       method: 'POST',
-      params: {
-        ...params,
-        screenplaySectionQueryRequest: undefined,
-        ...params['screenplaySectionQueryRequest'],
+      headers: {
+        'Content-Type': 'application/json',
       },
+      data: body,
       ...(options || {}),
     }
   )
@@ -61,17 +85,15 @@ export async function queryScreenplaySectionByPage(
 
 /** 此处后端没有提供注释 POST /screenplaySection/updateScreenplaySection */
 export async function updateScreenplaySection(
-  // 叠加生成的Param类型 (非body参数swagger默认没有生成对象)
-  params: API.updateScreenplaySectionParams,
+  body: API.ScreenplaySectionUpdateRequest,
   options?: { [key: string]: any }
 ) {
   return request<API.BaseResponseBoolean>('/screenplaySection/updateScreenplaySection', {
     method: 'POST',
-    params: {
-      ...params,
-      screenplaySectionUpdateRequest: undefined,
-      ...params['screenplaySectionUpdateRequest'],
+    headers: {
+      'Content-Type': 'application/json',
     },
+    data: body,
     ...(options || {}),
   })
 }

@@ -1,8 +1,4 @@
 declare namespace API {
-  type addScreenplaySectionParams = {
-    screenplaySection: ScreenplaySection
-  }
-
   type aiChatStreamParams = {
     chatRequest: ChatRequest
   }
@@ -217,9 +213,21 @@ declare namespace API {
     message?: string
   }
 
+  type BaseResponseScreenplayContentVO = {
+    code?: number
+    data?: ScreenplayContentVO
+    message?: string
+  }
+
   type BaseResponseScreenplaySection = {
     code?: number
     data?: ScreenplaySection
+    message?: string
+  }
+
+  type BaseResponseScreenplaySectionVO = {
+    code?: number
+    data?: ScreenplaySectionVO
     message?: string
   }
 
@@ -778,12 +786,16 @@ declare namespace API {
     permissionList?: string[]
   }
 
-  type queryScreenplaySectionByListParams = {
-    screenplaySectionQueryRequest: ScreenplaySectionQueryRequest
+  type queryScreenplayByIdParams = {
+    id: number
   }
 
-  type queryScreenplaySectionByPageParams = {
-    screenplaySectionQueryRequest: ScreenplaySectionQueryRequest
+  type queryScreenplayContentParams = {
+    id: number
+  }
+
+  type queryScreenplaySectionByIdParams = {
+    id: number
   }
 
   type ScreenplayAddRequest = {
@@ -794,6 +806,20 @@ declare namespace API {
     tags?: string[]
     cover?: string
     userId?: number
+  }
+
+  type ScreenplayContentVO = {
+    screenplayId?: number
+    name?: string
+    introduction?: string
+    category?: string
+    tags?: string[]
+    cover?: string
+    userId?: number
+    spaceId?: number
+    editTime?: string
+    createTime?: string
+    sectionVOList?: ScreenplaySectionVO[]
   }
 
   type ScreenplayQueryRequest = {
@@ -822,6 +848,15 @@ declare namespace API {
     createTime?: string
     updateTime?: string
     isDelete?: number
+  }
+
+  type ScreenplaySectionAddRequest = {
+    id?: number
+    sectionName?: string
+    content?: string
+    screenplayId?: number
+    userId?: number
+    spaceId?: number
   }
 
   type ScreenplaySectionQueryRequest = {
@@ -1080,10 +1115,6 @@ declare namespace API {
     code?: string
     message?: string
     requestId?: string
-  }
-
-  type updateScreenplaySectionParams = {
-    screenplaySectionUpdateRequest: ScreenplaySectionUpdateRequest
   }
 
   type updateUserAvatarParams = {

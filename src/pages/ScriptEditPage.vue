@@ -1,10 +1,10 @@
 <template>
-  <h2 class="page-title">小说编辑</h2>
+  <h2 class="page-title">剧本编辑</h2>
 
   <div v-if="!currentNovel" class="empty-state">
     <div class="empty-state-icon">📚</div>
-    <h3>请选择要编辑的小说</h3>
-    <p>您还没有选择任何小说进行编辑</p>
+    <h3>请选择要编辑的剧本</h3>
+    <p>您还没有选择任何剧本进行编辑</p>
   </div>
 
   <div v-else class="editor-container">
@@ -16,12 +16,12 @@
         <a-button type="primary" @click="saveContent" :disabled="!currentChapter">保存</a-button>
       </div>
       <div class="editor-content">
-              <textarea
-                v-if="currentChapter"
-                v-model="currentChapter.content"
-                class="text-editor"
-                placeholder="开始编写您的小说内容..."
-              ></textarea>
+        <textarea
+          v-if="currentChapter"
+          v-model="currentChapter.content"
+          class="text-editor"
+          placeholder="开始编写您的剧本内容..."
+        ></textarea>
         <div v-else class="empty-state">
           <div class="empty-state-icon">📝</div>
           <h3>请选择或创建章节</h3>
@@ -43,8 +43,7 @@
           :class="['chapter-item', { active: currentChapter && currentChapter.id === chapter.id }]"
           @click="selectChapter(chapter)"
         >
-          <div class="chapter-title">{{ chapter.title }}</div>
-          <div class="chapter-update-time">{{ formatTime(chapter.updateTime) }}</div>
+          <div class="chapter-title">{{ chapter.sectionName }}</div>
         </div>
         <div v-if="chapters.length === 0" class="empty-state">
           <div class="empty-state-icon">📖</div>
@@ -56,8 +55,6 @@
       </div>
     </div>
   </div>
-
-
 
   <!-- 添加章节模态框 -->
   <a-modal
@@ -76,19 +73,29 @@
 
 <script setup lang="ts">
 
-// 当前编辑的小说
+// 当前编辑的剧本
 import { onMounted, reactive, ref } from 'vue'
 import { message } from 'ant-design-vue'
+import {
+  addScreenplaySection,
+  queryScreenplayContent,
+  updateScreenplaySection
+} from '@/api/screenplaySectionController.ts'
+import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
 
-const currentNovel = ref(null);
+interface Props {
+  id: string | number
+}
+
+const currentNovel = ref(<API.ScreenplayContentVO>{});
 
 const props = defineProps<Props>()
 
 // 章节列表
-const chapters = ref([]);
+const chapters = ref(<API.ScreenplaySectionVO>[]);
 
 // 当前选中的章节
-const currentChapter = ref(null);
+const currentChapter = ref(<API.ScreenplaySectionVO> {});
 
 // 添加章节模态框
 const addChapterModalVisible = ref(false);
@@ -96,23 +103,24 @@ const newChapterForm = reactive({
   title: ''
 });
 
-// 加载小说数据
-const loadNovels = () => {
-  
-};
-
-// 加载章节数据
-const loadChapters = () => {
-  if (!currentNovel.value) return;
-
-  const allChapters = JSON.parse(localStorage.getItem('chapters') || '{}');
-  const novelChapters = allChapters[currentNovel.value.id] || [];
-  chapters.value = novelChapters;
-
-  if (novelChapters.length > 0 && !currentChapter.value) {
-    currentChapter.value = novelChapters[0];
+// 加载剧本数据
+const loadNovels = async () => {
+  try {
+    const res = await queryScreenplayContent({
+      id: props.id,
+    })
+    if (res.data.code === 0 && res.data.data) {
+      currentNovel.value = res.data.data
+      chapters.value = res.data.data.sectionVOList
+    } else {
+      message.error('获取剧本详情失败，' + res.data.message)
+    }
+  } catch (e: any) {
+    message.error('获取剧本详情失败：' + e.message)
   }
 };
+
+const loginUserStore = useLoginUserStore()
 
 // 显示添加章节模态框
 const showAddChapterModal = () => {
@@ -121,35 +129,42 @@ const showAddChapterModal = () => {
 };
 
 // 添加新章节
-const addChapter = () => {
+const addChapter = async () => {
   if (!newChapterForm.title) {
     message.error('请输入章节标题');
     return;
   }
 
-  const newChapter = {
-    id: Date.now().toString(),
-    title: newChapterForm.title,
+  const newChapter = <API.ScreenplaySectionAddRequest>{
+    sectionName: newChapterForm.title,
     content: '',
-    createTime: new Date(),
-    updateTime: new Date()
+    screenplayId: props.id,
+    userId: loginUserStore.loginUser.id,
+    spaceId: currentNovel.value.spaceId,
   };
-
-  // 保存章节到本地存储
-  const allChapters = JSON.parse(localStorage.getItem('chapters') || '{}');
-  if (!allChapters[currentNovel.value.id]) {
-    allChapters[currentNovel.value.id] = [];
+  try {
+    const res = await addScreenplaySection(newChapter)
+    if (res.data.code === 0 && res.data.data) {
+      const newChapter2 = <API.ScreenplaySectionVO>{
+        id: res.data.data.id,
+        sectionName: newChapterForm.title,
+        content: '',
+        screenplayId: props.id,
+        userId: loginUserStore.loginUser.id,
+        spaceId: currentNovel.value.spaceId,
+      }
+      // 更新章节列表和当前章节
+      chapters.value = [...chapters.value, newChapter2];
+      currentChapter.value = newChapter;
+      message.success('章节创建成功！');
+    }else{
+      message.error('创建章节失败' + res.data.message)
+    }
+  }catch (e: any) {
+    message.error('创建章节失败')
   }
-  allChapters[currentNovel.value.id].push(newChapter);
-  localStorage.setItem('chapters', JSON.stringify(allChapters));
-
-  // 更新章节列表和当前章节
-  chapters.value = allChapters[currentNovel.value.id];
-  currentChapter.value = newChapter;
-
   // 关闭模态框
   addChapterModalVisible.value = false;
-  message.success('章节创建成功！');
 };
 
 // 选择章节
@@ -158,22 +173,25 @@ const selectChapter = (chapter) => {
 };
 
 // 保存内容
-const saveContent = () => {
+const saveContent = async () => {
   if (!currentChapter.value) return;
-
-  // // 更新章节的更新时间
-  // currentChapter.value.updateTime = new Date();
-
-  // 保存到本地存储
-  const allChapters = JSON.parse(localStorage.getItem('chapters') || '{}');
-  const chapterIndex = allChapters[currentNovel.value.id].findIndex(
-    chapter => chapter.id === currentChapter.value.id
-  );
-
-  if (chapterIndex !== -1) {
-    allChapters[currentNovel.value.id][chapterIndex] = currentChapter.value;
-    localStorage.setItem('chapters', JSON.stringify(allChapters));
-    message.success('保存成功！');
+  const updateChapter = <API.ScreenplayUpdateRequest>{
+    id: currentChapter.value.id,
+    sectionName: currentChapter.value.sectionName,
+    content: currentChapter.value.content,
+    screenplayId: props.id,
+    userId: loginUserStore.loginUser.id,
+    spaceId: currentNovel.value.spaceId,
+  };
+  try {
+    const res = await updateScreenplaySection(updateChapter)
+    if (res.data.code === 0 && res.data.data) {
+      message.success('章节保存成功');
+    }else {
+      message.error('章节保存失败' + res.data.message);
+    }
+  }catch (e) {
+    message.error('章节保存失败')
   }
 };
 
