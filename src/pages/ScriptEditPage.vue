@@ -82,6 +82,8 @@ import { message } from 'ant-design-vue'
 
 const currentNovel = ref(null);
 
+const props = defineProps<Props>()
+
 // 章节列表
 const chapters = ref([]);
 
@@ -96,11 +98,7 @@ const newChapterForm = reactive({
 
 // 加载小说数据
 const loadNovels = () => {
-  const novels = JSON.parse(localStorage.getItem('novels') || '[]');
-  if (novels.length > 0 && !currentNovel.value) {
-    currentNovel.value = novels[0];
-    loadChapters();
-  }
+  
 };
 
 // 加载章节数据

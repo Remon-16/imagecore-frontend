@@ -6,48 +6,58 @@
       <a-form
         :model="novelForm"
         name="novelForm"
-        @finish="onCreateNovel"
         layout="vertical"
       >
         <a-form-item
           label="小说标题"
-          name="title"
+          name="name"
           :rules="[{ required: true, message: '请输入小说标题' }]"
         >
-          <a-input v-model:value="novelForm.title" placeholder="请输入小说标题" />
+          <a-input v-model:value="novelForm.name" placeholder="请输入小说标题" />
         </a-form-item>
-
-        <a-form-item
-          label="小说封面"
-          name="cover"
-        >
-          <a-upload
-            v-model:file-list="novelForm.coverFileList"
-            list-type="picture-card"
-            :before-upload="beforeUpload"
-            @preview="handlePreview"
-            :max-count="1"
-          >
-            <div v-if="novelForm.coverFileList.length < 1">
-              <plus-outlined />
-              <div style="margin-top: 8px">上传封面</div>
-            </div>
-          </a-upload>
+        <a-form-item name="category" label="分类">
+          <a-auto-complete
+            v-model:value="novelForm.category"
+            placeholder="请输入分类"
+            :options="categoryOptions"
+            allow-clear
+          />
         </a-form-item>
-
-        <a-form-item
-          label="标签"
-          name="tags"
-        >
+        <a-form-item name="tags" label="标签">
           <a-select
             v-model:value="novelForm.tags"
             mode="tags"
-            style="width: 100%"
-            placeholder="请选择或输入标签"
+            placeholder="请输入标签"
             :options="tagOptions"
-          ></a-select>
+            allow-clear
+          />
         </a-form-item>
 
+<!--        <a-form-item-->
+<!--          label="小说封面"-->
+<!--          name="cover"-->
+<!--        >-->
+<!--          <a-upload-->
+<!--            v-model:file-list="novelForm.coverFileList"-->
+<!--            list-type="picture-card"-->
+<!--            :before-upload="beforeUpload"-->
+<!--            @preview="handlePreview"-->
+<!--            :max-count="1"-->
+<!--          >-->
+<!--            <div v-if="novelForm.coverFileList.length < 1">-->
+<!--              <plus-outlined />-->
+<!--              <div style="margin-top: 8px">上传封面</div>-->
+<!--            </div>-->
+<!--          </a-upload>-->
+<!--        </a-form-item>-->
+        <a-form-item name="introduction" label="简介">
+          <a-textarea
+            v-model:value="novelForm.introduction"
+            placeholder="请输入简介"
+            :auto-size="{ minRows: 3, maxRows: 8 }"
+            allow-clear
+          />
+        </a-form-item>
         <a-form-item>
           <a-button type="primary" html-type="submit" @click="submitAddScript" block>创建小说</a-button>
         </a-form-item>
@@ -58,61 +68,73 @@
 
 <script setup lang="ts">
 // 新建小说表单
-import { reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { message } from 'ant-design-vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import { listPictureTagCategory } from '@/api/pictureController.ts'
+import { addScreenplay } from '@/api/screenplayController.ts'
+import { useLoginUserStore } from '@/stores/useLoginUserStore.ts'
 
 const novelForm = reactive({
-  title: '',
+  name: '',
   coverFileList: [],
-  tags: []
+  category: '',
+  tags: [],
+  introduction: '',
 });
 
-// 标签选项
-const tagOptions = ref([
-  { value: '玄幻' },
-  { value: '仙侠' },
-  { value: '都市' },
-  { value: '言情' },
-  { value: '科幻' },
-  { value: '悬疑' },
-  { value: '历史' },
-  { value: '武侠' }
-]);
+
 const router = useRouter()
-const submitAddScript = () => {
-  router.push({
-    path: "/edit_script",
-  })
-}
+const route = useRoute()
+const loginUserStore = useLoginUserStore()
+// 空间 id
+const spaceId = computed(() => {
+  return route.query?.spaceId
+})
+// const submitAddScript = () => {
+//   router.push({
+//     path: "/edit_script",
+//   })
+// }
 
 // 创建小说
-const onCreateNovel = () => {
-  if (!novelForm.title) {
+const submitAddScript = async () => {
+  if (!novelForm.name) {
     message.error('请输入小说标题');
     return;
   }
 
   // 创建新小说对象
-  const newNovel = {
-    id: Date.now().toString(),
-    title: novelForm.title,
-    cover: novelForm.coverFileList.length > 0 ? novelForm.coverFileList[0] : null,
+  const params = {
+    name: novelForm.name,
+    category: novelForm.category,
     tags: novelForm.tags,
-    createTime: new Date()
+    introduction: novelForm.introduction,
+    spaceId: spaceId.value,
+    userId: loginUserStore.loginUser.id
   };
 
-  // 保存到本地存储
-  const novels = JSON.parse(localStorage.getItem('novels') || '[]');
-  novels.push(newNovel);
-  localStorage.setItem('novels', JSON.stringify(novels));
-
+  const res = await addScreenplay(params)
+  try {
+    // 操作成功
+    if (res.data.code === 0 && res.data.data) {
+      message.success('创建剧本成功')
+      // 跳转到编辑页面
+      router.push({
+        path: `/edit_script/${res.data.data.id}`,
+      })
+    } else {
+      message.error('创建剧本失败，' + res.data.message)
+    }
+  } catch (e: any) {
+    message.success('创建剧本失败！')
+  }
   // 重置表单
-  novelForm.title = '';
+  novelForm.name = '';
   novelForm.coverFileList = [];
   novelForm.tags = [];
-
-  message.success('小说创建成功！');
+  novelForm.category = '';
+  novelForm.introduction = '';
 };
 
 // 上传前处理
@@ -125,6 +147,38 @@ const beforeUpload = (file) => {
 const handlePreview = (file) => {
   // 实现图片预览逻辑
 };
+
+// 标签和分类列表
+const categoryOptions = ref<string[]>([])
+const tagOptions = ref<string[]>([])
+
+/**
+ * 获取标签和分类选项
+ * @param values
+ */
+const getTagCategoryOptions = async () => {
+  const res = await listPictureTagCategory()
+  if (res.data.code === 0 && res.data.data) {
+    tagOptions.value = (res.data.data.tagList ?? []).map((data: string) => {
+      return {
+        value: data,
+        label: data,
+      }
+    })
+    categoryOptions.value = (res.data.data.categoryList ?? []).map((data: string) => {
+      return {
+        value: data,
+        label: data,
+      }
+    })
+  } else {
+    message.error('获取标签分类列表失败，' + res.data.message)
+  }
+}
+
+onMounted(() => {
+  getTagCategoryOptions()
+})
 
 </script>
 

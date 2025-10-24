@@ -133,7 +133,7 @@ const router = createRouter({
       component: AddScriptPage,
     },
     {
-      path: '/edit_script',
+      path: '/edit_script/:id',
       name: '编辑剧本',
       component: ScriptEditPage,
     },

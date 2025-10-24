@@ -8,6 +8,8 @@ import * as thumbController from './thumbController'
 import * as spaceUserController from './spaceUserController'
 import * as spaceController from './spaceController'
 import * as spaceAnalyzeController from './spaceAnalyzeController'
+import * as screenplaySectionController from './screenplaySectionController'
+import * as screenplayController from './screenplayController'
 import * as pictureCommentController from './pictureCommentController'
 import * as pictureController from './pictureController'
 import * as messageController from './messageController'
@@ -21,6 +23,8 @@ export default {
   spaceUserController,
   spaceController,
   spaceAnalyzeController,
+  screenplaySectionController,
+  screenplayController,
   pictureCommentController,
   pictureController,
   messageController,

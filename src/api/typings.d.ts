@@ -1,4 +1,8 @@
 declare namespace API {
+  type addScreenplaySectionParams = {
+    screenplaySection: ScreenplaySection
+  }
+
   type aiChatStreamParams = {
     chatRequest: ChatRequest
   }
@@ -60,6 +64,12 @@ declare namespace API {
   type BaseResponseListPictureVO = {
     code?: number
     data?: PictureVO[]
+    message?: string
+  }
+
+  type BaseResponseListScreenplaySectionVO = {
+    code?: number
+    data?: ScreenplaySectionVO[]
     message?: string
   }
 
@@ -153,6 +163,18 @@ declare namespace API {
     message?: string
   }
 
+  type BaseResponsePageScreenplaySectionVO = {
+    code?: number
+    data?: PageScreenplaySectionVO
+    message?: string
+  }
+
+  type BaseResponsePageScreenplayVO = {
+    code?: number
+    data?: PageScreenplayVO
+    message?: string
+  }
+
   type BaseResponsePageSpace = {
     code?: number
     data?: PageSpace
@@ -192,6 +214,18 @@ declare namespace API {
   type BaseResponsePictureVO = {
     code?: number
     data?: PictureVO
+    message?: string
+  }
+
+  type BaseResponseScreenplaySection = {
+    code?: number
+    data?: ScreenplaySection
+    message?: string
+  }
+
+  type BaseResponseScreenplayVO = {
+    code?: number
+    data?: ScreenplayVO
     message?: string
   }
 
@@ -497,6 +531,34 @@ declare namespace API {
     pages?: number
   }
 
+  type PageScreenplaySectionVO = {
+    records?: ScreenplaySectionVO[]
+    total?: number
+    size?: number
+    current?: number
+    orders?: OrderItem[]
+    optimizeCountSql?: PageScreenplaySectionVO
+    searchCount?: PageScreenplaySectionVO
+    optimizeJoinOfCountSql?: boolean
+    maxLimit?: number
+    countId?: string
+    pages?: number
+  }
+
+  type PageScreenplayVO = {
+    records?: ScreenplayVO[]
+    total?: number
+    size?: number
+    current?: number
+    orders?: OrderItem[]
+    optimizeCountSql?: PageScreenplayVO
+    searchCount?: PageScreenplayVO
+    optimizeJoinOfCountSql?: boolean
+    maxLimit?: number
+    countId?: string
+    pages?: number
+  }
+
   type PageSpace = {
     records?: Space[]
     total?: number
@@ -716,6 +778,107 @@ declare namespace API {
     permissionList?: string[]
   }
 
+  type queryScreenplaySectionByListParams = {
+    screenplaySectionQueryRequest: ScreenplaySectionQueryRequest
+  }
+
+  type queryScreenplaySectionByPageParams = {
+    screenplaySectionQueryRequest: ScreenplaySectionQueryRequest
+  }
+
+  type ScreenplayAddRequest = {
+    id?: number
+    name?: string
+    introduction?: string
+    category?: string
+    tags?: string[]
+    cover?: string
+    userId?: number
+  }
+
+  type ScreenplayQueryRequest = {
+    current?: number
+    pageSize?: number
+    sortField?: string
+    sortOrder?: string
+    userId?: number
+    spaceId?: number
+    name?: string
+    introduction?: string
+    category?: string
+    tags?: string[]
+    startEditTime?: string
+    endEditTime?: string
+  }
+
+  type ScreenplaySection = {
+    id?: number
+    sectionName?: string
+    content?: string
+    screenplayId?: number
+    userId?: number
+    spaceId?: number
+    editTime?: string
+    createTime?: string
+    updateTime?: string
+    isDelete?: number
+  }
+
+  type ScreenplaySectionQueryRequest = {
+    current?: number
+    pageSize?: number
+    sortField?: string
+    sortOrder?: string
+    userId?: number
+    spaceId?: number
+    sectionName?: string
+    content?: string
+    screenplayId?: number
+  }
+
+  type ScreenplaySectionUpdateRequest = {
+    userId?: number
+    spaceId?: number
+    id?: number
+    sectionName?: string
+    content?: string
+    screenplayId?: number
+  }
+
+  type ScreenplaySectionVO = {
+    id?: number
+    sectionName?: string
+    content?: string
+    screenplayId?: number
+    userId?: number
+    spaceId?: number
+    editTime?: string
+    createTime?: string
+  }
+
+  type ScreenplayUpdateRequest = {
+    id?: number
+    name?: string
+    introduction?: string
+    category?: string
+    tags?: string[]
+    cover?: string
+    userId?: number
+  }
+
+  type ScreenplayVO = {
+    id?: number
+    name?: string
+    introduction?: string
+    category?: string
+    tags?: string[]
+    cover?: string
+    userId?: number
+    spaceId?: number
+    editTime?: string
+    createTime?: string
+  }
+
   type SearchPictureByColorRequest = {
     picColor?: string
     spaceId?: number
@@ -917,6 +1080,10 @@ declare namespace API {
     code?: string
     message?: string
     requestId?: string
+  }
+
+  type updateScreenplaySectionParams = {
+    screenplaySectionUpdateRequest: ScreenplaySectionUpdateRequest
   }
 
   type updateUserAvatarParams = {
