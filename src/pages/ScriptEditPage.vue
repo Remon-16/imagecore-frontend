@@ -11,8 +11,9 @@
     <!-- 左侧编辑区 -->
     <div class="editor-left">
       <div class="editor-header">
-        <span v-if="currentChapter">{{ currentChapter.title }}</span>
-        <span v-else>请选择或创建章节</span>
+        <a-button>AI写作</a-button>
+        <span class="chapter-name" v-if="currentChapter">{{ currentChapter.sectionName }}</span>
+        <span class="chapter-name" v-else>请选择或创建章节</span>
         <a-button type="primary" @click="saveContent" :disabled="!currentChapter">保存</a-button>
       </div>
       <div class="editor-content">
@@ -50,9 +51,7 @@
           <p>暂无章节</p>
         </div>
       </div>
-      <div class="editor-header">
-        <a-button class="ai-writing-btn" type="dashed" block>AI写作</a-button>
-      </div>
+
     </div>
   </div>
 
@@ -147,7 +146,7 @@ const addChapter = async () => {
     if (res.data.code === 0 && res.data.data) {
       const newChapter2 = <API.ScreenplaySectionVO>{
         id: res.data.data.id,
-        sectionName: newChapterForm.title,
+        sectionName: res.data.data.sectionName,
         content: '',
         screenplayId: props.id,
         userId: loginUserStore.loginUser.id,
@@ -263,6 +262,13 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
 }
+
+.chapter-name {
+  flex: 1;
+  text-align: center;
+  font-weight: bold;
+  font-size: 16px;
+}
 .editor-content {
   flex: 1;
   padding: 16px;
@@ -322,4 +328,5 @@ onMounted(() => {
   margin-top: 10px;
   width: 100%;
 }
+
 </style>

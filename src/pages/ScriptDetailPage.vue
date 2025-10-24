@@ -29,7 +29,7 @@
     <ScriptSearchForm :onSearch="onSearch" />
     <div style="margin-bottom: 16px" />
     <!-- 图片列表 -->
-    <PictureList
+    <ScreenplayList
       :dataList="dataList"
       :loading="loading"
       :showOp="true"
@@ -63,13 +63,13 @@ import {
 
   searchPictureByColor
 } from '@/api/pictureController.ts'
-import PictureList from '@/components/PictureList.vue'
 import ScriptSearchForm from '@/components/ScriptSearchForm.vue'
-import { ColorPicker } from 'vue3-colorpicker'
 import 'vue3-colorpicker/style.css'
 import BatchEditPictureModal from '@/components/BatchEditPictureModal.vue'
 import { TeamOutlined } from '@ant-design/icons-vue'
 import { SPACE_PERMISSION_ENUM, SPACE_TYPE_MAP } from '../constants/space.ts'
+import ScreenplayList from '@/components/ScreenplayList.vue'
+import { queryScreenplayPage } from '@/api/screenplayController.ts'
 
 interface Props {
   id: string | number
@@ -114,12 +114,12 @@ onMounted(() => {
 // --------- 获取图片列表 --------
 
 // 定义数据
-const dataList = ref<API.PictureVO[]>([])
+const dataList = ref<API.ScreenplayVO[]>([])
 const total = ref(0)
 const loading = ref(true)
 
 // 搜索条件
-const searchParams = ref<API.PictureQueryRequest>({
+const searchParams = ref<API.ScreenplayQueryRequest>({
   current: 1,
   pageSize: 12,
   sortField: 'createTime',
@@ -134,7 +134,7 @@ const fetchData = async () => {
     spaceId: props.id,
     ...searchParams.value,
   }
-  const res = await listPictureVoByPage(params)
+  const res = await queryScreenplayPage(params)
   if (res.data.code === 0 && res.data.data) {
     dataList.value = res.data.data.records ?? []
     total.value = res.data.data.total ?? 0
