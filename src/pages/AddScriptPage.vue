@@ -87,15 +87,11 @@ const novelForm = reactive({
 const router = useRouter()
 const route = useRoute()
 const loginUserStore = useLoginUserStore()
+
 // 空间 id
 const spaceId = computed(() => {
   return route.query?.spaceId
 })
-// const submitAddScript = () => {
-//   router.push({
-//     path: "/edit_script",
-//   })
-// }
 
 // 创建小说
 const submitAddScript = async () => {

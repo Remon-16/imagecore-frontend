@@ -11,7 +11,7 @@
     <!-- 左侧编辑区 -->
     <div class="editor-left">
       <div class="editor-header">
-        <a-button>AI写作</a-button>
+        <a-button type="dashed" >AI写作</a-button>
         <span class="chapter-name" v-if="currentChapter">{{ currentChapter.sectionName }}</span>
         <span class="chapter-name" v-else>请选择或创建章节</span>
         <a-button type="primary" @click="saveContent" :disabled="!currentChapter">保存</a-button>
